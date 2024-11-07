@@ -10,13 +10,12 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static store.domain.Promotion.findPromotionByName;
 
 class ProductTest {
     @DisplayName("상품내에 재고 감소 테스트입니다.")
     @Test
     void 상품내에_재고_감소_테스트입니다() {
-        Product product = new Product(10, "탄산2+1");
+        Product product = new Product("콜라",1000, 10, "탄산2+1");
         product.subtractQuantity(10);
         Quantity actualQuantity = product.getQuantity();
 
@@ -26,7 +25,7 @@ class ProductTest {
     @DisplayName("상품내에 재고 감소 예외 테스트입니다.")
     @Test
     void 상품내에_재고_감소_예외_테스트입니다() {
-        Product product = new Product(10, "탄산2+1");
+        Product product = new Product("콜라",1000,10, "탄산2+1");
 
         assertThatThrownBy(() -> product.subtractQuantity(11)).isInstanceOf(IllegalArgumentException.class);
     }
@@ -35,7 +34,7 @@ class ProductTest {
     @ParameterizedTest
     @MethodSource("providePromotionNameAndPromotion")
     void 이름에_맞는_프로모션_반환하는_테스트(String promotionName, Promotion promotion) {
-        Product product = new Product(10, promotionName);
+        Product product = new Product("콜라",1000,10, promotionName);
 
         assertThat(product.getPromotion()).isEqualTo(promotion);
     }
