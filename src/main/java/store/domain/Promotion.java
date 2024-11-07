@@ -27,4 +27,13 @@ public enum Promotion {
     public boolean isPromotionSalePeriod(LocalDateTime todayDate) {
         return !ChronoLocalDate.from(todayDate).isBefore(this.startDate) && !ChronoLocalDate.from(todayDate).isAfter(this.endDate);
     }
+
+    public static Promotion findPromotionByName(String promotionName) {
+        for (Promotion promotion : Promotion.values()) {
+            if (promotion.promotionName.equals(promotionName)) {
+                return promotion;
+            }
+        }
+        return NONE;
+    }
 }
