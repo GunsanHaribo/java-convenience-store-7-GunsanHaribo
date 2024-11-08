@@ -1,5 +1,7 @@
 package store.domain;
 
+import camp.nextstep.edu.missionutils.DateTimes;
+
 public class Product {
     private final String name;
     private final int price;
@@ -14,7 +16,12 @@ public class Product {
     }
 
     public void subtractQuantity(int requestQuantity) {
-        this.quantity = this.quantity.subtractQuantity(requestQuantity);
+        this.quantity = quantity.subtractQuantity(requestQuantity);
+
+        if (promotion != Promotion.NONE && promotion.isPromotionSalePeriod(DateTimes.now())) {
+            int promotionCoefficient = requestQuantity / promotion.getBuy();
+            this.quantity = quantity.subtractQuantity(promotionCoefficient * this.promotion.getGet());
+        }
     }
 
     public Quantity getQuantity() {

@@ -36,4 +36,12 @@ public enum Promotion {
         }
         return NONE;
     }
+
+    public int getBuy() {
+        return buy;
+    }
+
+    public int getGet() {
+        return get;
+    }
 }
