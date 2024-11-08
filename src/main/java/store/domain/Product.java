@@ -16,12 +16,15 @@ public class Product {
     }
 
     public void subtractQuantity(int requestQuantity) {
-        this.quantity = quantity.subtractQuantity(requestQuantity);
+        this.quantity = quantity.subtractQuantity(requestQuantity + promotionQuantity(requestQuantity));
+    }
 
+    private int promotionQuantity(int requestQuantity) {
+        int promotionQuantity = 0;
         if (promotion != Promotion.NONE && promotion.isPromotionSalePeriod(DateTimes.now())) {
-            int promotionCoefficient = requestQuantity / promotion.getBuy();
-            this.quantity = quantity.subtractQuantity(promotionCoefficient * this.promotion.getGet());
+            promotionQuantity = (requestQuantity / promotion.getBuy()) * this.promotion.getGet();
         }
+        return promotionQuantity;
     }
 
     public Quantity getQuantity() {
