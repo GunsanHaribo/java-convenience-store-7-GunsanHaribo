@@ -40,14 +40,24 @@ class ProductTest {
         assertThat(actualQuantity.getQuantity()).isEqualTo(0);
     }
 
-    @DisplayName("프로모션이 있는 상품의 재고감소 예외테스트입니다.")
+    @DisplayName("프로모션이 있는 상품의 부족한 재고 반환 테스트입니다.")
     @Test
-    void 프로모션이_있는_상품의_재고감소_예외테스트() {
+    void 프로모션이_있는_상품의_부족한_재고_반환_테스트() {
         Product product = new Product("콜라", 1000, 10, "탄산2+1");
+        int lackOfQuantity = product.subtractQuantity(8);
 
-        assertThatThrownBy(() -> product.subtractQuantity(8)).isInstanceOf(IllegalArgumentException.class);
+        assertThat(lackOfQuantity).isEqualTo(2);
     }
 
+    @DisplayName("프로모션이 있는 상품의 부족한 재고 반환 후 수량 확인 테스트입니다.")
+    @Test
+    void 프로모션이_있는_상품의_부족한_재고_반환_후_수량확인_테스트() {
+        Product product = new Product("콜라", 1000, 10, "탄산2+1");
+        product.subtractQuantity(8);
+        int actualQuantity = product.getQuantity().getQuantity();
+
+        assertThat(actualQuantity).isEqualTo(0);
+    }
 
     @DisplayName("이름에 맞는 프로모션 반환하는 테스트 입니다.")
     @ParameterizedTest

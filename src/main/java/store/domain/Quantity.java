@@ -14,6 +14,10 @@ public class Quantity {
         throw new IllegalArgumentException("[ERROR] 재고보다 큰 숫자가 들어왔습니다");
     }
 
+    public int calculateLackOfQuantity(int requestQuantity) {
+        return requestQuantity - this.quantity;
+    }
+
     public boolean isPurchasable(int requestQuantity) {
         return quantity >= requestQuantity;
     }

@@ -15,16 +15,32 @@ public class Product {
         this.promotion = Promotion.findPromotionByName(promotion);
     }
 
-    public void subtractQuantity(int requestQuantity) {
-        this.quantity = quantity.subtractQuantity(requestQuantity + promotionQuantity(requestQuantity));
+    public int subtractQuantity(int requestQuantity) {
+        int lackOfQuantity = 0;
+        int totalRequestQuantity = requestQuantity + promotionQuantity(requestQuantity);
+        try {
+            this.quantity = quantity.subtractQuantity(totalRequestQuantity);
+        } catch (IllegalArgumentException e) {
+            if (isPromotion()) {
+                lackOfQuantity = quantity.calculateLackOfQuantity(totalRequestQuantity);
+                this.quantity = quantity.subtractQuantity(requestQuantity + lackOfQuantity);
+                return lackOfQuantity;
+            }
+            throw new IllegalArgumentException(e.getMessage());
+        }
+        return lackOfQuantity;
     }
 
     private int promotionQuantity(int requestQuantity) {
         int promotionQuantity = 0;
-        if (promotion != Promotion.NONE && promotion.isPromotionSalePeriod(DateTimes.now())) {
+        if (isPromotion()) {
             promotionQuantity = (requestQuantity / promotion.getBuy()) * this.promotion.getGet();
         }
         return promotionQuantity;
+    }
+
+    private boolean isPromotion() {
+        return promotion != Promotion.NONE && promotion.isPromotionSalePeriod(DateTimes.now());
     }
 
     public Quantity getQuantity() {
