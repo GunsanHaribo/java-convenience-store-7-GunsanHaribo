@@ -50,4 +50,8 @@ public class Product {
     public Promotion getPromotion() {
         return promotion;
     }
+
+    public String getName() {
+        return name;
+    }
 }
