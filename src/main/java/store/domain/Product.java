@@ -8,11 +8,11 @@ public class Product {
     private Quantity quantity;
     private final Promotion promotion;
 
-    public Product(String name, int price, int quantity, String promotion) {
+    public Product(String name, int price, int quantity, Promotion promotion) {
         this.name = name;
         this.price = price;
         this.quantity = new Quantity(quantity);
-        this.promotion = Promotion.findPromotionByName(promotion);
+        this.promotion = promotion;
     }
 
     public void subtractQuantityWithoutPromotion(int requestQuantity) {
@@ -46,7 +46,7 @@ public class Product {
     }
 
     public boolean isPromotionProduct() {
-        return promotion != Promotion.NONE && promotion.isPromotionSalePeriod(DateTimes.now());
+        return promotion != null && promotion.isPromotionSalePeriod(DateTimes.now());
     }
 
     public boolean isSameName(String name) {

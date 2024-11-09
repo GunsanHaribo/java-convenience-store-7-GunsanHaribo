@@ -12,12 +12,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ProductsTest {
+    private final Promotions promotions = new Promotions("/promotions.md");
+
     @DisplayName("프로모션 기간 중이라면 프로모션 재고를 우선 차감, 프로모션 재고가 부족할 경우에는 일반 재고를 사용한다.")
     @Test
     void 프로모션_기간_중이라면_프로모션_재고를_우선_차감_프로모션_재고가_부족할_경우에는_일반_재고를_사용() {
         Products products = new Products(
                 List.of(new Product("콜라", 1000, 10, null),
-                        new Product("콜라", 1000, 10, "탄산2+1")));
+                        new Product("콜라", 1000, 10, promotions.findPromotionByName("탄산2+1"))));
         Map<String, Integer> requestProducts = new HashMap<>() {
             {
                 put("콜라", 13);
@@ -55,7 +57,7 @@ class ProductsTest {
     @Test
     void 프로모션_기간중에_프로모션_재고_밖에_없을때_초과시_예외테스트() {
         Products products = new Products(
-                List.of(new Product("콜라", 1000, 10, "탄산2+1")));
+                List.of(new Product("콜라", 1000, 10, promotions.findPromotionByName("탄산2+1"))));
         Map<String, Integer> requestProducts = new HashMap<>() {
             {
                 put("콜라", 11);
@@ -69,15 +71,16 @@ class ProductsTest {
 
     @DisplayName("상품 초기화 테스트")
     @Test
-    void 상품_초기화_테스트(){
-        Products products = new Products("/products.md");
+    void 상품_초기화_테스트() {
+
+        Products products = new Products("/products.md", promotions);
         List<Product> actualProducts = products.getProducts();
         Product product = actualProducts.get(0);
 
-        SoftAssertions.assertSoftly((softly)->{
+        SoftAssertions.assertSoftly((softly) -> {
             softly.assertThat(product.getName()).isEqualTo("콜라");
             softly.assertThat(product.getQuantity().getQuantity()).isEqualTo(10);
-            softly.assertThat(product.getPromotion()).isEqualTo(Promotion.SORT_DRINK_TWO_PLUS_ONE);
+            softly.assertThat(product.getPromotion()).isEqualTo(promotions.findPromotionByName("탄산2+1"));
         });
     }
 }

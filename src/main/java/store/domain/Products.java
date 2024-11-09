@@ -13,11 +13,12 @@ public class Products {
         this.products = products;
     }
 
-    public Products(String filePath) {
-        this.products = createProducts(filePath);
+    public Products(String filePath, Promotions promotions) {
+        this.products = createProducts(filePath, promotions);
     }
 
-    private List<Product> createProducts(String filePath) {
+    // TODO: 11/10/24 10줄
+    private List<Product> createProducts(String filePath, Promotions promotions) {
         List<Product> products = new ArrayList<>();
         try (InputStream inputStream = getClass().getResourceAsStream(filePath);
              BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
@@ -28,7 +29,7 @@ public class Products {
                 String name = values.get(0);
                 int price = Integer.parseInt(values.get(1).trim());
                 int quantity = Integer.parseInt(values.get(2).trim());
-                String promotion = values.get(3).trim();
+                Promotion promotion = promotions.findPromotionByName(values.get(3).trim());
                 products.add(new Product(name, price, quantity, promotion));
             }
         } catch (IOException e) {
