@@ -19,6 +19,15 @@ public class Product {
         this.quantity = quantity.subtractQuantityWithoutPromotion(requestQuantity);
     }
 
+    public int calculatePromotionQuantity(int requestQuantity) {
+        int promotionQuantity = this.promotion.calculateRequiredPromotionQuantity(requestQuantity);
+        int totalRequestQuantity = requestQuantity + promotionQuantity;
+        if (totalRequestQuantity <= this.quantity.getQuantity()) {
+            return promotionQuantity;
+        }
+        return 0;
+    }
+
     // TODO: 11/9/24 10줄로 리펙토링 필요
     public int subtractQuantityWithPromotion(int requestQuantity) {
         int lackOfQuantity = 0;

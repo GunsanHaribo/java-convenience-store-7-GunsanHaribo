@@ -37,6 +37,16 @@ public enum Promotion {
         return NONE;
     }
 
+    public int calculateRequiredPromotionQuantity(int requestQuantity) {
+        if (this != Promotion.NONE) {
+            int promotionQuantity = requestQuantity % (this.buy + this.get);
+            if (promotionQuantity == this.buy) {
+                return this.get;
+            }
+        }
+        return 0;
+    }
+
     public int getBuy() {
         return buy;
     }

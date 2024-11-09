@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
@@ -76,5 +77,15 @@ class ProductTest {
                 Arguments.of("null", Promotion.NONE),
                 Arguments.of("hi", Promotion.NONE)
         );
+    }
+
+    @DisplayName("재고 한도 내에서 프로모션 수량을 계산한다.")
+    @ParameterizedTest
+    @CsvSource(value = {"7:0", "8:1", "9:0", "11:0"}, delimiter = ':')
+    void 재고_한도_내에서_프로모션_수량을_계산(int requestQuantity, int expectedPromotionQuantity) {
+        Product product = new Product("콜라", 1000, 10, "탄산2+1");
+        int actualPromotionQuantity = product.calculatePromotionQuantity(requestQuantity);
+
+        assertThat(actualPromotionQuantity).isEqualTo(expectedPromotionQuantity);
     }
 }
