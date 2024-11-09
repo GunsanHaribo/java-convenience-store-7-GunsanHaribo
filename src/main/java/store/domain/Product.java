@@ -29,24 +29,20 @@ public class Product {
     }
 
     // TODO: 11/9/24 10줄로 리펙토링 필요
-    public int subtractQuantityWithPromotion(int requestQuantity) {
-        int lackOfQuantity = 0;
-        int totalRequestQuantity = requestQuantity + promotionQuantity(requestQuantity);
-        try {
-            this.quantity = quantity.subtractQuantityWithoutPromotion(totalRequestQuantity);
-        } catch (IllegalArgumentException e) {
-            lackOfQuantity = this.quantity.calculateLackOfQuantity(totalRequestQuantity);
+    public int subtractQuantityWithPromotion(int requestQuantity, boolean isPromotionApplied) {
+        int promotionQuantity = calculatePromotionQuantity(requestQuantity);
+        if (requestQuantity > this.quantity.getQuantity()) {
+            int lackOfQuantity = this.quantity.calculateLackOfQuantity(requestQuantity);
             this.quantity = new Quantity(0);
+            return lackOfQuantity;
         }
-        return lackOfQuantity;
-    }
-
-    private int promotionQuantity(int requestQuantity) {
-        int promotionQuantity = 0;
-        if (isPromotionProduct()) {
-            promotionQuantity = (requestQuantity / promotion.getBuy()) * this.promotion.getGet();
+        if (isPromotionApplied) {
+            requestQuantity += promotionQuantity;
         }
-        return promotionQuantity;
+        if (requestQuantity <= this.quantity.getQuantity()) {
+            this.quantity = quantity.subtractQuantityWithoutPromotion(requestQuantity);
+        }
+        return 0;
     }
 
     public boolean isPromotionProduct() {

@@ -24,7 +24,7 @@ public class Products {
         boolean hasOnlyNoPromotionProducts = promotionProducts.isEmpty() && hasNoPromotionProducts;
 
         if (hasPromotionProducts) {
-            purchasePromotionProduct(requestProduct.getValue(), promotionProducts, noPromotionProducts, hasNoPromotionProducts);
+            purchasePromotionProduct(requestProduct.getValue(), promotionProducts, noPromotionProducts);
         }
         if (hasOnlyNoPromotionProducts) {
             purchaseNoPromotionProduct(requestProduct.getValue(), noPromotionProducts);
@@ -37,8 +37,8 @@ public class Products {
         }
     }
 
-    private void purchasePromotionProduct(int requestProductValue, List<Product> promotionProducts, List<Product> noPromotionProducts, boolean hasNoPromotionProducts) {
-        int lackOfQuantity = promotionProducts.getFirst().subtractQuantityWithPromotion(requestProductValue);
+    private void purchasePromotionProduct(int requestProductValue, List<Product> promotionProducts, List<Product> noPromotionProducts) {
+        int lackOfQuantity = promotionProducts.getFirst().subtractQuantityWithPromotion(requestProductValue, true);
         if (lackOfQuantity > 0) {
             purchaseNoPromotionProducts(noPromotionProducts, lackOfQuantity);
         }

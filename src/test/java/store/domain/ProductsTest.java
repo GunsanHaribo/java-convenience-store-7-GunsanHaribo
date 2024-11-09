@@ -20,7 +20,7 @@ class ProductsTest {
                         new Product("콜라", 1000, 10, "탄산2+1")));
         Map<String, Integer> requestProducts = new HashMap<>() {
             {
-                put("콜라", 8);
+                put("콜라", 13);
             }
         };
         products.purchaseProducts(requestProducts);
@@ -29,7 +29,7 @@ class ProductsTest {
         int promotionProductQuantity = actualProducts.get(1).getQuantity().getQuantity();
 
         SoftAssertions.assertSoftly((softly) -> {
-            softly.assertThat(nonePromotionProductQuantity).isEqualTo(8);
+            softly.assertThat(nonePromotionProductQuantity).isEqualTo(7);
             softly.assertThat(promotionProductQuantity).isEqualTo(0);
         });
     }
@@ -58,7 +58,7 @@ class ProductsTest {
                 List.of(new Product("콜라", 1000, 10, "탄산2+1")));
         Map<String, Integer> requestProducts = new HashMap<>() {
             {
-                put("콜라", 8);
+                put("콜라", 11);
             }
         };
 

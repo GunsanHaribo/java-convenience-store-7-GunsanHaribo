@@ -35,29 +35,31 @@ class ProductTest {
     @Test
     void 프로모션이_있는_상품의_재고감소_테스트() {
         Product product = new Product("콜라", 1000, 10, "탄산2+1");
-        product.subtractQuantityWithPromotion(7);
+        product.subtractQuantityWithPromotion(7, true);
         Quantity actualQuantity = product.getQuantity();
 
-        assertThat(actualQuantity.getQuantity()).isEqualTo(0);
+        assertThat(actualQuantity.getQuantity()).isEqualTo(3);
     }
 
     @DisplayName("프로모션이 있는 상품의 부족한 재고 반환 테스트입니다.")
-    @Test
-    void 프로모션이_있는_상품의_부족한_재고_반환_테스트() {
+    @ParameterizedTest
+    @CsvSource(value = {"10:true:0", "12:true:2"}, delimiter = ':')
+    void 프로모션이_있는_상품의_부족한_재고_반환_테스트(int requestQuantity, boolean isPromotionApplied, int expectedProductQuantity) {
         Product product = new Product("콜라", 1000, 10, "탄산2+1");
-        int lackOfQuantity = product.subtractQuantityWithPromotion(8);
+        int lackOfQuantity = product.subtractQuantityWithPromotion(requestQuantity, isPromotionApplied);
 
-        assertThat(lackOfQuantity).isEqualTo(2);
+        assertThat(lackOfQuantity).isEqualTo(expectedProductQuantity);
     }
 
     @DisplayName("프로모션이 있는 상품의 부족한 재고 반환 후 수량 확인 테스트입니다.")
-    @Test
-    void 프로모션이_있는_상품의_부족한_재고_반환_후_수량확인_테스트() {
+    @ParameterizedTest
+    @CsvSource(value = {"8:true:1", "8:false:2"}, delimiter = ':')
+    void 프로모션이_있는_상품의_부족한_재고_반환_후_수량확인_테스트(int requestQuantity, boolean isPromotionApplied, int expectedProductQuantity) {
         Product product = new Product("콜라", 1000, 10, "탄산2+1");
-        product.subtractQuantityWithPromotion(8);
+        product.subtractQuantityWithPromotion(requestQuantity, isPromotionApplied);
         int actualQuantity = product.getQuantity().getQuantity();
 
-        assertThat(actualQuantity).isEqualTo(0);
+        assertThat(actualQuantity).isEqualTo(expectedProductQuantity);
     }
 
     @DisplayName("이름에 맞는 프로모션 반환하는 테스트 입니다.")
@@ -77,6 +79,16 @@ class ProductTest {
                 Arguments.of("null", Promotion.NONE),
                 Arguments.of("hi", Promotion.NONE)
         );
+    }
+
+    @DisplayName("프로모션 적용이 가능한 상품에 대해 고객이 해당 수량보다 적게 가져온 경우, 혜택적용 가능한 수량 반환 테스트")
+    @ParameterizedTest
+    @CsvSource(value = {"9:true:0", "9:false:1"}, delimiter = ':')
+    void 프로모션이_적용_가능한_상품의_경우_수량_보다_적게_가져왔고_아직_프로모션_재고가_남아_있을떄_혜택적용_가능한_수량_반환(int requestQuantity, boolean isPromotionApplied, int expectedProductQuantity) {
+        Product product = new Product("초코송이", 1000, 10, "MD추천상품");
+        product.subtractQuantityWithPromotion(requestQuantity, isPromotionApplied);
+
+        assertThat(product.getQuantity().getQuantity()).isEqualTo(expectedProductQuantity);
     }
 
     @DisplayName("재고 한도 내에서 프로모션 수량을 계산한다.")
