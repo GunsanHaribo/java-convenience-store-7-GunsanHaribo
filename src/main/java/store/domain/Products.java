@@ -1,5 +1,9 @@
 package store.domain;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 
 public class Products {
@@ -7,6 +11,30 @@ public class Products {
 
     public Products(List<Product> products) {
         this.products = products;
+    }
+
+    public Products(String filePath) {
+        this.products = createProducts(filePath);
+    }
+
+    private List<Product> createProducts(String filePath) {
+        List<Product> products = new ArrayList<>();
+        try (InputStream inputStream = getClass().getResourceAsStream(filePath);
+             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                List<String> values = Arrays.stream(line.split(",")).toList();
+                String name = values.get(0);
+                int price = Integer.parseInt(values.get(1).trim());
+                int quantity = Integer.parseInt(values.get(2).trim());
+                String promotion = values.get(3).trim();
+                products.add(new Product(name, price, quantity, promotion));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return products;
     }
 
     public void purchaseProducts(Map<String, Integer> requestProducts) {

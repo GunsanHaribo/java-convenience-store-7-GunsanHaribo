@@ -66,4 +66,18 @@ class ProductsTest {
             products.purchaseProducts(requestProducts);
         }).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("상품 초기화 테스트")
+    @Test
+    void 상품_초기화_테스트(){
+        Products products = new Products("/products.md");
+        List<Product> actualProducts = products.getProducts();
+        Product product = actualProducts.get(0);
+
+        SoftAssertions.assertSoftly((softly)->{
+            softly.assertThat(product.getName()).isEqualTo("콜라");
+            softly.assertThat(product.getQuantity().getQuantity()).isEqualTo(10);
+            softly.assertThat(product.getPromotion()).isEqualTo(Promotion.SORT_DRINK_TWO_PLUS_ONE);
+        });
+    }
 }
