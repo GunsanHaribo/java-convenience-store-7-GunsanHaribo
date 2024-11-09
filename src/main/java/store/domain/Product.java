@@ -2,6 +2,8 @@ package store.domain;
 
 import camp.nextstep.edu.missionutils.DateTimes;
 
+import java.util.Optional;
+
 public class Product {
     private final String name;
     private final int price;
@@ -57,11 +59,15 @@ public class Product {
         return quantity;
     }
 
-    public Promotion getPromotion() {
-        return promotion;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public Optional<Promotion> getPromotion() {
+        return Optional.ofNullable(promotion);
     }
 }

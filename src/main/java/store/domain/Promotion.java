@@ -42,4 +42,8 @@ public class Promotion {
     public boolean isSameName(String promotionName) {
         return this.promotionName.equals(promotionName);
     }
+
+    public String getPromotionName() {
+        return promotionName;
+    }
 }
