@@ -7,7 +7,7 @@ public class Quantity {
         this.quantity = quantity;
     }
 
-    public Quantity subtractQuantity(int requestQuantity) {
+    public Quantity subtractQuantityWithoutPromotion(int requestQuantity) {
         if (isPurchasable(requestQuantity)) {
             return new Quantity(this.quantity - requestQuantity);
         }

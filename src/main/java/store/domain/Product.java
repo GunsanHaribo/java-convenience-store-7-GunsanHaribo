@@ -15,32 +15,37 @@ public class Product {
         this.promotion = Promotion.findPromotionByName(promotion);
     }
 
-    public int subtractQuantity(int requestQuantity) {
+    public void subtractQuantityWithoutPromotion(int requestQuantity) {
+        this.quantity = quantity.subtractQuantityWithoutPromotion(requestQuantity);
+    }
+
+    // TODO: 11/9/24 10줄로 리펙토링 필요
+    public int subtractQuantityWithPromotion(int requestQuantity) {
         int lackOfQuantity = 0;
         int totalRequestQuantity = requestQuantity + promotionQuantity(requestQuantity);
         try {
-            this.quantity = quantity.subtractQuantity(totalRequestQuantity);
+            this.quantity = quantity.subtractQuantityWithoutPromotion(totalRequestQuantity);
         } catch (IllegalArgumentException e) {
-            if (isPromotion()) {
-                lackOfQuantity = quantity.calculateLackOfQuantity(totalRequestQuantity);
-                this.quantity = quantity.subtractQuantity(requestQuantity + lackOfQuantity);
-                return lackOfQuantity;
-            }
-            throw new IllegalArgumentException(e.getMessage());
+            lackOfQuantity = this.quantity.calculateLackOfQuantity(totalRequestQuantity);
+            this.quantity = new Quantity(0);
         }
         return lackOfQuantity;
     }
 
     private int promotionQuantity(int requestQuantity) {
         int promotionQuantity = 0;
-        if (isPromotion()) {
+        if (isPromotionProduct()) {
             promotionQuantity = (requestQuantity / promotion.getBuy()) * this.promotion.getGet();
         }
         return promotionQuantity;
     }
 
-    private boolean isPromotion() {
+    public boolean isPromotionProduct() {
         return promotion != Promotion.NONE && promotion.isPromotionSalePeriod(DateTimes.now());
+    }
+
+    public boolean isSameName(String name) {
+        return this.name.equals(name);
     }
 
     public Quantity getQuantity() {
