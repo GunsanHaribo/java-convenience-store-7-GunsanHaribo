@@ -31,14 +31,6 @@ public class Promotion {
         return 0;
     }
 
-    public int getBuy() {
-        return buy;
-    }
-
-    public int getGet() {
-        return get;
-    }
-
     public boolean isSameName(String promotionName) {
         return this.promotionName.equals(promotionName);
     }

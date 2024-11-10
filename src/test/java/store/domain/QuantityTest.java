@@ -23,7 +23,7 @@ class QuantityTest {
     @Test
     void 결제된_수량만큼_해당_상품의_재고에서_차감하여_수량을_관리한다() {
         Quantity quantity = new Quantity(10);
-        Quantity subtractedQuantity = quantity.subtractQuantityWithoutPromotion(10);
+        Quantity subtractedQuantity = quantity.subtractQuantity(10);
 
         assertThat(subtractedQuantity.getQuantity()).isEqualTo(0);
     }
@@ -33,6 +33,6 @@ class QuantityTest {
     void 결제된_수량만큼_해당_상품의_재고에서_차감하여_수량을_관리_예외_테스트() {
         Quantity quantity = new Quantity(10);
 
-        assertThatThrownBy(() -> quantity.subtractQuantityWithoutPromotion(11)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> quantity.subtractQuantity(11)).isInstanceOf(IllegalArgumentException.class);
     }
 }

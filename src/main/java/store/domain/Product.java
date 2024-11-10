@@ -17,32 +17,24 @@ public class Product {
         this.promotion = promotion;
     }
 
-    public void subtractQuantityWithoutPromotion(int requestQuantity) {
-        this.quantity = quantity.subtractQuantityWithoutPromotion(requestQuantity);
+    public void subtractQuantity(int requestQuantity) {
+        this.quantity = quantity.subtractQuantity(requestQuantity);
     }
 
-    public int calculatePromotionQuantity(int requestQuantity) {
-        int promotionQuantity = this.promotion.calculateRequiredPromotionQuantity(requestQuantity);
-        int totalRequestQuantity = requestQuantity + promotionQuantity;
-        if (totalRequestQuantity <= this.quantity.getQuantity()) {
-            return promotionQuantity;
+    public int calculateRequiredPromotionQuantity(int requestQuantity) {
+        int requiredPromotionQuantity = this.promotion.calculateRequiredPromotionQuantity(requestQuantity);
+        if (requiredPromotionQuantity > 0) {
+            int totalRequestQuantity = requestQuantity + requiredPromotionQuantity;
+            if (totalRequestQuantity <= this.quantity.getQuantity()) {
+                return requiredPromotionQuantity;
+            }
         }
         return 0;
     }
 
-    // TODO: 11/9/24 10줄로 리펙토링 필요
-    public int subtractQuantityWithPromotion(int requestQuantity, boolean isPromotionApplied) {
-        int promotionQuantity = calculatePromotionQuantity(requestQuantity);
-        if (requestQuantity > this.quantity.getQuantity()) {
-            int lackOfQuantity = this.quantity.calculateLackOfQuantity(requestQuantity);
-            this.quantity = new Quantity(0);
-            return lackOfQuantity;
-        }
-        if (isPromotionApplied) {
-            requestQuantity += promotionQuantity;
-        }
-        if (requestQuantity <= this.quantity.getQuantity()) {
-            this.quantity = quantity.subtractQuantityWithoutPromotion(requestQuantity);
+    public int checkLackOfPromotion(int requestQuantity) {
+        if (!this.quantity.isPurchasable(requestQuantity)) {
+            return this.quantity.calculateLackOfQuantity(requestQuantity);
         }
         return 0;
     }
