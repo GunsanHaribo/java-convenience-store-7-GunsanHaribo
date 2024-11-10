@@ -44,18 +44,6 @@ public class Products {
         return promotionProduct;
     }
 
-    public int checkLackOfPromotion(int requestProductValue, Product promotionProduct) {
-        return promotionProduct.checkLackOfPromotion(requestProductValue);
-    }
-
-    public int checkPromotionApplied(int requestProductValue, Product promotionProduct) {
-        return promotionProduct.calculateRequiredPromotionQuantity(requestProductValue);
-    }
-
-    private boolean isPromotionProduct(String requestProductName, Product product) {
-        return product.isSameName(requestProductName) && product.isPromotionProduct();
-    }
-
     public List<Product> extractNoPromotionProducts(String requestProductName) {
         List<Product> nonePromotionProducts = new ArrayList<>();
         for (Product product : products) {
@@ -64,6 +52,10 @@ public class Products {
             }
         }
         return nonePromotionProducts;
+    }
+
+    private boolean isPromotionProduct(String requestProductName, Product product) {
+        return product.isSameName(requestProductName) && product.isPromotionProduct();
     }
 
     private boolean isNonePromotionProduct(String requestProductName, Product product) {

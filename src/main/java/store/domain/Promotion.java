@@ -30,10 +30,10 @@ public class Promotion {
         }
         return 0;
     }
-    public int calculateNumberOfPromotionProduct(int promotionProductNumber){
-        return promotionProductNumber/(this.buy + this.get);
-    }
 
+    public int calculateNumberOfPromotionProduct(int promotionProductNumber) {
+        return promotionProductNumber / (this.buy + this.get);
+    }
 
     public boolean isSameName(String promotionName) {
         return this.promotionName.equals(promotionName);

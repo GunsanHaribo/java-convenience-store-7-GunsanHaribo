@@ -43,7 +43,7 @@ public class Product {
         return promotion != null && promotion.isPromotionSalePeriod(DateTimes.now());
     }
 
-    public int calculateNumberOfPromotionProduct(int promotionProductNumber){
+    public int calculateNumberOfPromotionProduct(int promotionProductNumber) {
         return this.promotion.calculateNumberOfPromotionProduct(promotionProductNumber);
     }
 
