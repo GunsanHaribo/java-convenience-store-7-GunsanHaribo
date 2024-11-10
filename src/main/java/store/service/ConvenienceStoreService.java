@@ -25,25 +25,24 @@ public class ConvenienceStoreService {
             int lackOfQuantity = promotionProduct.checkLackOfPromotion(requestProduct.getValue());
             if (lackOfQuantity > 0) {
                 int purchasedTotalQuantity = requestProduct.getValue() - lackOfQuantity;
-                promotionProduct.subtractQuantity(purchasedTotalQuantity);
-                int promotionBenefitQuantity = promotionProduct.calculateNumberOfPromotionProduct(purchasedTotalQuantity);
-                receipt.updateFreeProduct(new PurchasedProduct(requestProduct.getKey(), promotionProduct.getPrice(), promotionBenefitQuantity));
-                receipt.updateFullPriceProduct(new PurchasedProduct(requestProduct.getKey(), promotionProduct.getPrice(), purchasedTotalQuantity - promotionBenefitQuantity));
-
-                return new PromotionPurchasingResultDto(LACK_OF_PROMOTION_QUANTITY, lackOfQuantity);
+                return calculateRequiredPromotionQuantity(promotionProduct, purchasedTotalQuantity, requestProduct, LACK_OF_PROMOTION_QUANTITY, lackOfQuantity);
             }
 
             int requiredPromotionAmount = promotionProduct.calculateRequiredPromotionQuantity(requestProduct.getValue());
             if (requiredPromotionAmount > 0) {
-                promotionProduct.subtractQuantity(requestProduct.getValue());
-                int promotionBenefitQuantity = promotionProduct.calculateNumberOfPromotionProduct(requestProduct.getValue());
-                receipt.updateFreeProduct(new PurchasedProduct(requestProduct.getKey(), promotionProduct.getPrice(), promotionBenefitQuantity));
-                receipt.updateFullPriceProduct(new PurchasedProduct(requestProduct.getKey(), promotionProduct.getPrice(), requestProduct.getValue() - promotionBenefitQuantity));
-                return new PromotionPurchasingResultDto(PROMOTION_CAN_BE_APPLIED, requiredPromotionAmount);
+                return calculateRequiredPromotionQuantity(promotionProduct, requestProduct.getValue(), requestProduct, PROMOTION_CAN_BE_APPLIED, requiredPromotionAmount);
             }
             purchasePurePromotionProduct(requestProduct);
         }
         return new PromotionPurchasingResultDto(PROMOTION_NOT_EXIST, requestProduct.getValue());
+    }
+
+    private PromotionPurchasingResultDto calculateRequiredPromotionQuantity(Product promotionProduct, Integer requestProduct, Map.Entry<String, Integer> requestProduct1, PromotionPurchaseStatus promotionCanBeApplied, int requiredPromotionAmount) {
+        promotionProduct.subtractQuantity(requestProduct);
+        int promotionBenefitQuantity = promotionProduct.calculateNumberOfPromotionProduct(requestProduct);
+        receipt.updateFreeProduct(new PurchasedProduct(requestProduct1.getKey(), promotionProduct.getPrice(), promotionBenefitQuantity));
+        receipt.updateFullPriceProduct(new PurchasedProduct(requestProduct1.getKey(), promotionProduct.getPrice(), requestProduct - promotionBenefitQuantity));
+        return new PromotionPurchasingResultDto(promotionCanBeApplied, requiredPromotionAmount);
     }
 
     public void purchasePurePromotionProduct(Map.Entry<String, Integer> requestProduct) {
