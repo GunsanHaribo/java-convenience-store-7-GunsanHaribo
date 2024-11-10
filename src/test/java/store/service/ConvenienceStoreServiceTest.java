@@ -11,29 +11,26 @@ import store.application.PromotionPurchasingResultDto;
 import store.application.ReceiptDto;
 import store.domain.PromotionPurchaseStatus;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.AbstractMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static store.domain.PromotionPurchaseStatus.PROMOTION_NOT_EXIST;
 
 class ConvenienceStoreServiceTest {
     @DisplayName("현재 재고 반환")
     @ParameterizedTest
-    @CsvSource(value = {"0:콜라:1000:10:탄산2+1", "1:콜라:1000:10:''"}, delimiter = ':')
-    void 현재_재고_반환_테스트(int index, String name, int price, int quantity, String promotion) {
+    @CsvSource(value = {"콜라:1000:10:탄산2+1"}, delimiter = ':')
+    void 현재_재고_반환_테스트(String name, int price, int quantity, String promotion) {
         ConvenienceStoreService convenienceStoreService = new ConvenienceStoreService();
         ProductsDto productsDto = convenienceStoreService.loadInitialProducts();
-        ProductDto product = productsDto.getProducts().get(index);
-
+        ProductDto productDto = productsDto.getProducts().get(name).get(0);
 
         SoftAssertions.assertSoftly((softly) -> {
-            softly.assertThat(product.getName()).isEqualTo(name);
-            softly.assertThat(product.getPrice()).isEqualTo(price);
-            softly.assertThat(product.getQuantity()).isEqualTo(quantity);
-            softly.assertThat(product.getPromotion()).isEqualTo(promotion);
+            softly.assertThat(productDto.getPrice()).isEqualTo(price);
+            softly.assertThat(productDto.getQuantity()).isEqualTo(quantity);
+            softly.assertThat(productDto.getPromotion()).isEqualTo(promotion);
         });
     }
 
@@ -81,11 +78,7 @@ class ConvenienceStoreServiceTest {
         convenienceStoreService.purchaseNoPromotionProducts(requestProduct1);
 
         ProductsDto productsDto = convenienceStoreService.loadInitialProducts();
-        int quantityVitamin = productsDto.getProducts().stream()
-                .filter(product -> "비타민워터".equals(product.getName()))
-                .mapToInt(ProductDto::getQuantity)
-                .findFirst()
-                .orElse(-1);
+        int quantityVitamin = productsDto.getProducts().get("비타민워터").get(0).getQuantity();
 
         assertThat(quantityVitamin).isEqualTo(0);
     }
@@ -99,8 +92,8 @@ class ConvenienceStoreServiceTest {
         convenienceStoreService.purchasePromotionProduct(requestProduct1);
 
         ProductsDto productsDto = convenienceStoreService.loadInitialProducts();
-        int quantityVitamin = productsDto.getProducts().stream()
-                .filter(product -> productName.equals(product.getName()) && promotionName.equals(product.getPromotion()))
+        int quantityVitamin = productsDto.getProducts().get(productName).stream()
+                .filter(product -> promotionName.equals(product.getPromotion()))
                 .mapToInt(ProductDto::getQuantity)
                 .findFirst()
                 .orElse(-1);

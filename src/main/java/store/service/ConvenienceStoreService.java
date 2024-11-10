@@ -20,8 +20,9 @@ public class ConvenienceStoreService {
     }
 
     public PromotionPurchasingResultDto purchasePromotionProduct(Map.Entry<String, Integer> requestProduct) {
-        Product promotionProduct = products.extractPromotionProducts(requestProduct.getKey());
-        if (promotionProduct != null) {
+        boolean isPromotionProductPresent = products.findPromotionProducts(requestProduct.getKey()).isPresent();
+        if (isPromotionProductPresent) {
+            Product promotionProduct = products.findPromotionProducts(requestProduct.getKey()).get();
             int lackOfQuantity = promotionProduct.checkLackOfPromotion(requestProduct.getValue());
             if (lackOfQuantity > 0) {
                 int purchasedTotalQuantity = requestProduct.getValue() - lackOfQuantity;
@@ -40,20 +41,25 @@ public class ConvenienceStoreService {
     private PromotionPurchasingResultDto calculateRequiredPromotionQuantity(Product promotionProduct, Integer requestProduct, Map.Entry<String, Integer> requestProduct1, PromotionPurchaseStatus promotionCanBeApplied, int requiredPromotionAmount) {
         promotionProduct.subtractQuantity(requestProduct);
         int promotionBenefitQuantity = promotionProduct.calculateNumberOfPromotionProduct(requestProduct);
+
         receipt.updateFreeProduct(new PurchasedProduct(requestProduct1.getKey(), promotionProduct.getPrice(), promotionBenefitQuantity));
         receipt.updateFullPriceProduct(new PurchasedProduct(requestProduct1.getKey(), promotionProduct.getPrice(), requestProduct - promotionBenefitQuantity));
         return new PromotionPurchasingResultDto(promotionCanBeApplied, requiredPromotionAmount);
     }
 
     public void purchasePurePromotionProduct(Map.Entry<String, Integer> requestProduct) {
-        Product promotionProduct = products.extractPromotionProducts(requestProduct.getKey());
-        promotionProduct.subtractQuantity(requestProduct.getValue());
+        boolean isPromotionProductPresent = products.findPromotionProducts(requestProduct.getKey()).isPresent();
+        Product promotionProduct = null;
+        if(isPromotionProductPresent){
+            promotionProduct = products.findPromotionProducts(requestProduct.getKey()).get();
+            promotionProduct.subtractQuantity(requestProduct.getValue());
+        }
 
         receipt.updateFreeProduct(new PurchasedProduct(requestProduct.getKey(), promotionProduct.getPrice(), requestProduct.getValue()));
     }
 
     public void purchaseNoPromotionProducts(Map.Entry<String, Integer> requestProduct) {
-        List<Product> noPromotionProducts = products.extractNoPromotionProducts(requestProduct.getKey());
+        List<Product> noPromotionProducts = products.findNoPromotionProducts(requestProduct.getKey());
         try {
             noPromotionProducts.getFirst().subtractQuantity(requestProduct.getValue());
             receipt.updateFullPriceProduct(new PurchasedProduct(requestProduct.getKey(), noPromotionProducts.getFirst().getPrice(), requestProduct.getValue()));

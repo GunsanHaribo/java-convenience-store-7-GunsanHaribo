@@ -6,6 +6,8 @@ import store.application.PurchasedProductDto;
 import store.application.ReceiptDto;
 
 import java.text.DecimalFormat;
+import java.util.List;
+import java.util.Map;
 
 public class OutputView {
     private static final DecimalFormat decimalFormat = new DecimalFormat("#,###");
@@ -16,15 +18,17 @@ public class OutputView {
     public static void printProducts(ProductsDto productsDto) {
         System.out.println("안녕하세요. W편의점입니다.\n" + "현재 보유하고 있는 상품입니다.");
 
-        for (ProductDto productDto : productsDto.getProducts()) {
-            String quantityInfo = "";
-            if (productDto.getQuantity() > 0) {
-                quantityInfo = productDto.getQuantity() + "개";
+        for (Map.Entry<String, List<ProductDto>> productDtos : productsDto.getProducts().entrySet()) {
+            for (ProductDto productDto : productDtos.getValue()) {
+                String quantityInfo = "";
+                if (productDto.getQuantity() > 0) {
+                    quantityInfo = productDto.getQuantity() + "개";
+                }
+                if (productDto.getQuantity() <= 0) {
+                    quantityInfo = "재고 없음";
+                }
+                System.out.printf("- %s %s원 %s %s%n", productDto.getName(), decimalFormat.format(productDto.getPrice()), quantityInfo, productDto.getPromotion());
             }
-            if (productDto.getQuantity() <= 0) {
-                quantityInfo = "재고 없음";
-            }
-            System.out.printf("- %s %s원 %s %s%n", productDto.getName(), decimalFormat.format(productDto.getPrice()), quantityInfo, productDto.getPromotion());
         }
     }
 
