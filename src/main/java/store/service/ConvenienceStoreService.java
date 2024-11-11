@@ -23,19 +23,31 @@ public class ConvenienceStoreService {
         boolean isPromotionProductPresent = products.findPromotionProducts(requestProduct.getKey()).isPresent();
         if (isPromotionProductPresent) {
             Product promotionProduct = products.findPromotionProducts(requestProduct.getKey()).get();
-            int lackOfQuantity = promotionProduct.checkLackOfPromotion(requestProduct.getValue());
-            if (lackOfQuantity > 0) {
-                int purchasedTotalQuantity = requestProduct.getValue() - lackOfQuantity;
-                return calculateRequiredPromotionQuantity(promotionProduct, purchasedTotalQuantity, requestProduct, LACK_OF_PROMOTION_QUANTITY, lackOfQuantity);
-            }
+            PromotionPurchasingResultDto lackOfPromotionProduct = calculatePromotionPurchasingResult(requestProduct, promotionProduct);
+            if (lackOfPromotionProduct != null) return lackOfPromotionProduct;
 
-            int requiredPromotionAmount = promotionProduct.calculateRequiredPromotionQuantity(requestProduct.getValue());
-            if (requiredPromotionAmount > 0) {
-                return calculateRequiredPromotionQuantity(promotionProduct, requestProduct.getValue(), requestProduct, PROMOTION_CAN_BE_APPLIED, requiredPromotionAmount);
-            }
+            PromotionPurchasingResultDto requiredPromotionProduct = calculatePromotionPurchasingResultDto(requestProduct, promotionProduct);
+            if (requiredPromotionProduct != null) return requiredPromotionProduct;
             purchasePurePromotionProduct(requestProduct);
         }
         return new PromotionPurchasingResultDto(PROMOTION_NOT_EXIST, requestProduct.getValue());
+    }
+
+    private PromotionPurchasingResultDto calculatePromotionPurchasingResult(Map.Entry<String, Integer> requestProduct, Product promotionProduct) {
+        int lackOfQuantity = promotionProduct.checkLackOfPromotion(requestProduct.getValue());
+        if (lackOfQuantity > 0) {
+            int purchasedTotalQuantity = requestProduct.getValue() - lackOfQuantity;
+            return calculateRequiredPromotionQuantity(promotionProduct, purchasedTotalQuantity, requestProduct, LACK_OF_PROMOTION_QUANTITY, lackOfQuantity);
+        }
+        return null;
+    }
+
+    private PromotionPurchasingResultDto calculatePromotionPurchasingResultDto(Map.Entry<String, Integer> requestProduct, Product promotionProduct) {
+        int requiredPromotionAmount = promotionProduct.calculateRequiredPromotionQuantity(requestProduct.getValue());
+        if (requiredPromotionAmount > 0) {
+            return calculateRequiredPromotionQuantity(promotionProduct, requestProduct.getValue(), requestProduct, PROMOTION_CAN_BE_APPLIED, requiredPromotionAmount);
+        }
+        return null;
     }
 
     private PromotionPurchasingResultDto calculateRequiredPromotionQuantity(Product promotionProduct, Integer requestProduct, Map.Entry<String, Integer> requestProduct1, PromotionPurchaseStatus promotionCanBeApplied, int requiredPromotionAmount) {

@@ -25,15 +25,25 @@ public class OutputView {
 
     private static void printExistingProducts(Map.Entry<String, List<ProductDto>> productDtos) {
         for (ProductDto productDto : productDtos.getValue()) {
-            String quantityInfo = "";
-            if (productDto.getQuantity() > 0) {
-                quantityInfo = productDto.getQuantity() + "개";
-            }
-            if (productDto.getQuantity() <= 0) {
-                quantityInfo = "재고 없음";
-            }
+            String quantityInfo = convertQuantityToString(productDto);
+            quantityInfo = convertZeroQuantityToString(productDto, quantityInfo);
             System.out.printf("- %s %s원 %s %s%n", productDto.getName(), decimalFormat.format(productDto.getPrice()), quantityInfo, productDto.getPromotion());
         }
+    }
+
+    private static String convertQuantityToString(ProductDto productDto) {
+        String quantityInfo = "";
+        if (productDto.getQuantity() > 0) {
+            quantityInfo = productDto.getQuantity() + "개";
+        }
+        return quantityInfo;
+    }
+
+    private static String convertZeroQuantityToString(ProductDto productDto, String quantityInfo) {
+        if (productDto.getQuantity() <= 0) {
+            quantityInfo = "재고 없음";
+        }
+        return quantityInfo;
     }
 
     public static void printReceipt(ReceiptDto receiptDto) {

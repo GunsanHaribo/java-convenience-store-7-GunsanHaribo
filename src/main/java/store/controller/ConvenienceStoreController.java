@@ -19,6 +19,7 @@ public class ConvenienceStoreController {
         while (true) {
             printProducts(convenienceStoreService.loadInitialProducts());
             Map<String, Integer> products = readProducts();
+
             purchaseProducts(products);
             ReceiptDto receiptDto = createReceipt();
             printReceipt(receiptDto);
