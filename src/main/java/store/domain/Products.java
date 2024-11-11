@@ -10,7 +10,18 @@ public class Products {
     private final Map<String, List<Product>> products;
 
     public Products(String filePath, Promotions promotions) {
-        this.products = createProducts(filePath, promotions);
+        Map<String, List<Product>> products = createProducts(filePath, promotions);
+        for (Map.Entry<String, List<Product>> sameNameProduct : products.entrySet()) {
+            List<Product> sameNameProducts = sameNameProduct.getValue();
+            if (sameNameProducts.size() == 1) {
+                Product firstProduct = sameNameProducts.getFirst();
+                boolean present = firstProduct.getPromotion().isPresent();
+                if (present) {
+                    sameNameProducts.add(new Product(firstProduct.getName(), firstProduct.getPrice(), 0, null));
+                }
+            }
+        }
+        this.products = products;
     }
 
     // TODO: 11/10/24 10줄
