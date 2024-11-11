@@ -47,10 +47,6 @@ public class Product {
         return this.promotion.calculateNumberOfPromotionProduct(promotionProductNumber);
     }
 
-    public boolean isSameName(String name) {
-        return this.name.equals(name);
-    }
-
     public Quantity getQuantity() {
         return quantity;
     }

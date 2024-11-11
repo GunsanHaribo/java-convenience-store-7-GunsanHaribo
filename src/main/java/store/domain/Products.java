@@ -13,38 +13,46 @@ public class Products {
         Map<String, List<Product>> products = createProducts(filePath, promotions);
         for (Map.Entry<String, List<Product>> sameNameProduct : products.entrySet()) {
             List<Product> sameNameProducts = sameNameProduct.getValue();
-            if (sameNameProducts.size() == 1) {
-                Product firstProduct = sameNameProducts.getFirst();
-                boolean present = firstProduct.getPromotion().isPresent();
-                if (present) {
-                    sameNameProducts.add(new Product(firstProduct.getName(), firstProduct.getPrice(), 0, null));
-                }
-            }
+            createNoPromotionProduct(sameNameProducts);
         }
         this.products = products;
     }
 
-    // TODO: 11/10/24 10줄
+    private void createNoPromotionProduct(List<Product> sameNameProducts) {
+        if (sameNameProducts.size() == 1) {
+            Product firstProduct = sameNameProducts.getFirst();
+            boolean present = firstProduct.getPromotion().isPresent();
+            if (present) {
+                sameNameProducts.add(new Product(firstProduct.getName(), firstProduct.getPrice(), 0, null));
+            }
+        }
+    }
+
     private Map<String, List<Product>> createProducts(String filePath, Promotions promotions) {
         Map<String, List<Product>> products = new HashMap<>();
         try (InputStream inputStream = getClass().getResourceAsStream(filePath);
              BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
             String line;
             br.readLine();
-            while ((line = br.readLine()) != null) {
-                List<String> values = Arrays.stream(line.split(",")).toList();
-                String name = values.get(0);
-                int price = Integer.parseInt(values.get(1).trim());
-                int quantity = Integer.parseInt(values.get(2).trim());
-                Promotion promotion = promotions.findPromotionByName(values.get(3).trim());
-                List<Product> sameNameProducts = products.getOrDefault(name, new ArrayList<>());
-                sameNameProducts.add(new Product(name, price, quantity, promotion));
-                products.put(name, sameNameProducts);
-            }
+            parseDocument(promotions, products, br);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return products;
+    }
+
+    private void parseDocument(Promotions promotions, Map<String, List<Product>> products, BufferedReader br) throws IOException {
+        String line;
+        while ((line = br.readLine()) != null) {
+            List<String> values = Arrays.stream(line.split(",")).toList();
+            String name = values.get(0);
+            int price = Integer.parseInt(values.get(1).trim());
+            int quantity = Integer.parseInt(values.get(2).trim());
+            Promotion promotion = promotions.findPromotionByName(values.get(3).trim());
+            List<Product> sameNameProducts = products.getOrDefault(name, new ArrayList<>());
+            sameNameProducts.add(new Product(name, price, quantity, promotion));
+            products.put(name, sameNameProducts);
+        }
     }
 
     public Optional<Product> findPromotionProducts(String requestProductName) {

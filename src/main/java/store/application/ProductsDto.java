@@ -29,10 +29,14 @@ public class ProductsDto {
             String promotionName = sameNameProduct.getPromotion()
                     .map(Promotion::getPromotionName)
                     .orElse("");
-            List<ProductDto> productDto = productDtos.getOrDefault(sameNameProduct.getName(), new ArrayList<>());
-            productDto.add(new ProductDto(sameNameProduct.getName(), sameNameProduct.getPrice(), sameNameProduct.getQuantity().getQuantity(), promotionName));
-            productDtos.put(sameNameProduct.getName(), productDto);
+            putProductDtos(productDtos, sameNameProduct, promotionName);
         }
+    }
+
+    private void putProductDtos(Map<String, List<ProductDto>> productDtos, Product sameNameProduct, String promotionName) {
+        List<ProductDto> productDto = productDtos.getOrDefault(sameNameProduct.getName(), new ArrayList<>());
+        productDto.add(new ProductDto(sameNameProduct.getName(), sameNameProduct.getPrice(), sameNameProduct.getQuantity().getQuantity(), promotionName));
+        productDtos.put(sameNameProduct.getName(), productDto);
     }
 
     public Map<String, List<ProductDto>> getProducts() {

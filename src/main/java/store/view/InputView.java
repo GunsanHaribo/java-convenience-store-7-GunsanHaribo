@@ -11,7 +11,7 @@ public class InputView {
     private InputView() {
     }
 
-    public static Map<String, Integer> readItems() {
+    public static Map<String, Integer> readProducts() {
         Map<String, Integer> products = new HashMap<>();
         System.out.println("구매하실 상품명과 수량을 입력해 주세요. (예: [사이다-2],[감자칩-1])");
         List<String> items = Arrays.stream(Console.readLine().split(",")).toList();
